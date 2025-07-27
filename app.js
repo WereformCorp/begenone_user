@@ -10,11 +10,72 @@ const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const compression = require('compression');
 
-const AppError = require('./src/utils/appError');
+const AppError = require('./src/utils/AppError.js');
 const indexRouter = require('./src/routes/indexRoutes');
 
 // Start Express App
 const app = express();
+
+// USING CORS
+const allowedOrigins = [
+  // LOCALHOST MICROSERVICES
+  'http://localhost:3000',
+  'http://localhost:3001',
+  'http://localhost:3002',
+  'http://localhost:3003',
+  'http://localhost:3004',
+  'http://localhost:3005',
+  'http://localhost:3006',
+  'http://localhost:3007',
+  'http://localhost:3008',
+  'http://localhost:3009',
+  'http://localhost:3010',
+  'http://localhost:3011',
+  'http://localhost:3012',
+  'http://localhost:3013',
+  'http://localhost:3014',
+
+  // LOCALHOST MFE (React frontends)
+  'http://localhost:5000',
+  'http://localhost:5008',
+
+  // PRODUCTION MICROSERVICES
+  'https://begenone.com',
+  'https://api-auth.begenone.com',
+  'https://api-user.begenone.com',
+  'https://api-channel.begenone.com',
+  'https://api-subscription.begenone.com',
+  'https://api-video.begenone.com',
+  'https://api-wire.begenone.com',
+  'https://api-aws.begenone.com',
+
+  // PRODUCTION MFE FRONTENDS
+  'https://shell.begenone.com',
+  'https://video.begenone.com',
+  'https://channel.begenone.com',
+  'https://home.begenone.com',
+  'https://wires.begenone.com',
+  'https://upload.begenone.com',
+  'https://subscription.begenone.com',
+  'https://shared.begenone.com',
+  'https://setting.begenone.com',
+  'https://clipz.begenone.com',
+];
+
+// USING CORS
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        console.error(`CORS BLOCKED for origin: ${origin}`);
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
+    credentials: true,
+  })
+);
 
 app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));
@@ -22,19 +83,18 @@ app.set('views', path.join(__dirname, 'views'));
 // Serving static files
 app.use(express.static(path.join(__dirname, 'public')));
 
-// USING CORS
-app.use(
-  cors(
-    {
-      origin: 'http://localhost:5000', // Shell frontend URL
-      credentials: true, // REQUIRED to allow cookies
-    },
-    {
-      origin: 'http://localhost:5008', // Settings frontend URL
-      credentials: true, // REQUIRED to allow cookies
-    }
-  )
-);
+// app.use(
+//   cors(
+//     {
+//       origin: 'http://localhost:5000', // shell domain
+//       credentials: true, // REQUIRED to allow cookies
+//     },
+//     {
+//       origin: 'http://localhost:5008', // settings domain
+//       credentials: true, // REQUIRED to allow cookies
+//     }
+//   )
+// );
 
 // SET SECURITY HTTP HEADERS
 app.use(
@@ -80,6 +140,7 @@ app.use(attachUserToLocals);
 
 // 3) ROUTE
 app.use('/api/v1/users', indexRouter);
+app.get('/', (req, res) => res.status(200).send('OK'));
 
 // eslint-disable-next-line arrow-body-style
 app.get('*', (req, res, next) => {

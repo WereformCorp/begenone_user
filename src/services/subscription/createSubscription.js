@@ -1,6 +1,12 @@
 const axios = require('axios');
 const catchAsync = require('../../utils/catchAsync');
 
+const isProd = process.env.NODE_ENV === 'production';
+
+const subscriptionUrlPath = isProd
+  ? process.env.PRODUCTION_APP_SUBSCRIPTION_API_URL_PRODUCTION
+  : process.env.LOCALHOST_SUBSCRIPTION_URL;
+
 const createSubscription = catchAsync(
   async ({
     user,
@@ -11,7 +17,7 @@ const createSubscription = catchAsync(
   }) => {
     try {
       const subscription = await axios.post(
-        `${process.env.SUBSCRIPTION_URL}/api/v1/subscription/route-pricings/`,
+        `${subscriptionUrlPath}/api/v1/subscription/route-pricings/`,
         {
           user, // Renaming `user` to `userId`
           pricingName,

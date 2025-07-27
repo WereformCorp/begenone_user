@@ -6,7 +6,7 @@ const getAllPricings = require('../services/subscription/getAllPricings');
 const createSubscription = require('../services/subscription/createSubscription');
 
 const catchAsync = require('../utils/catchAsync');
-const AppError = require('../utils/appError');
+const AppError = require('../utils/AppError');
 const sendMail = require('../utils/email');
 
 const signup = catchAsync(async (req, res, next) => {
